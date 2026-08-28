@@ -23,6 +23,7 @@ const dots = document.querySelectorAll('.dot');
 let autoSlideInterval;
 
 function showSlide(index) {
+    if(!slides.length) return;
     slides.forEach(s => s.classList.remove('active'));
     dots.forEach(d => d.classList.remove('active'));
     currentSlide = (index + slides.length) % slides.length;
