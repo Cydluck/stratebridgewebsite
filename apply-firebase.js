@@ -4,6 +4,8 @@ import { db, collection, addDoc } from './firebase-config.js';
 // SUBMIT FORM FUNCTION
 window.submitForm = async function() {
 
+    console.log("Submit button clicked!!");
+
     const firstName = document.querySelectorAll('.form-group input[type="text"]')[0].value.trim();
     const lastName = document.querySelectorAll('.form-group input[type="text"]')[1].value.trim();
     const email = document.querySelector('.form-group input[type="email"]').value.trim();
@@ -22,8 +24,14 @@ window.submitForm = async function() {
     const additionalInfo = document.querySelector('textarea').value.trim();
     const agreed = document.querySelector('input[type="checkbox"]').checked;
 
+    console.log("First Name:", firstName);
+    console.log("Email:", email);
+    console.log("Country:", preferredCountry);
+    console.log("Agreed:", agreed);
+
     if (!firstName || !lastName || !email || !phone || !address || !preferredCountry || !preferredCourse) {
         alert('Please fill in all required fields!');
+        console.log("Validation failed!!");
         return;
     }
 
@@ -32,16 +40,14 @@ window.submitForm = async function() {
         return;
     }
 
-  const btn = document.querySelector('.btn-submit');
-btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-btn.disabled = true;
-console.log("Starting submission...");
-console.log("First Name:", firstName);
-console.log("Email:", email);
+    const btn = document.querySelector('.btn-submit');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    btn.disabled = true;
+
+    console.log("Trying Firebase now...");
 
     try {
-    console.log("Trying Firebase...");
-    await addDoc(collection(db, 'students'), {
+        await addDoc(collection(db, 'students'), {
             firstName,
             lastName,
             email,
@@ -62,7 +68,9 @@ console.log("Email:", email);
             submittedAt: new Date().toISOString()
         });
 
-        // Send Email using EmailJS
+        console.log("Firebase saved successfully!!");
+
+        // Send Email
         try {
             window.emailjs.init("aAc_NM94Zfcadvccq");
             await window.emailjs.send("service_e8e0k9k", "template_0mr8lo8", {
@@ -74,8 +82,9 @@ console.log("Email:", email);
                 services_needed: servicesNeeded,
                 submission_date: new Date().toLocaleDateString()
             });
+            console.log("Email sent successfully!!");
         } catch(emailError) {
-            console.log('Email error but form saved:', emailError);
+            console.log('Email error:', emailError);
         }
 
         // Success!!
@@ -92,7 +101,9 @@ console.log("Email:", email);
         }, 5000);
 
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Firebase Error:', error);
+        console.log('Error code:', error.code);
+        console.log('Error message:', error.message);
         btn.innerHTML = '<i class="fas fa-times"></i> Error! Please Try Again';
         btn.style.background = '#e53935';
         btn.style.color = 'white';
