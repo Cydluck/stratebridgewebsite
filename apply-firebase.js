@@ -1,9 +1,6 @@
 // Import Firebase
 import { db, collection, addDoc } from './firebase-config.js';
 
-// Initialize EmailJS
-emailjs.init("aAc_NM94Zfcadvccq");
-
 // SUBMIT FORM FUNCTION
 window.submitForm = async function() {
 
@@ -40,7 +37,7 @@ window.submitForm = async function() {
     btn.disabled = true;
 
     try {
-        // Save to Firebase
+        // Save to Firebase FIRST
         await addDoc(collection(db, 'students'), {
             firstName,
             lastName,
@@ -62,16 +59,21 @@ window.submitForm = async function() {
             submittedAt: new Date().toISOString()
         });
 
-        // Send Email Notification
-        await emailjs.send("service_e8e0k9k", "template_0mr8lo8", {
-            student_name: `${firstName} ${lastName}`,
-            student_email: email,
-            student_phone: phone,
-            preferred_country: preferredCountry,
-            preferred_course: preferredCourse,
-            services_needed: servicesNeeded,
-            submission_date: new Date().toLocaleDateString()
-        });
+        // Send Email using EmailJS
+        try {
+            window.emailjs.init("aAc_NM94Zfcadvccq");
+            await window.emailjs.send("service_e8e0k9k", "template_0mr8lo8", {
+                student_name: `${firstName} ${lastName}`,
+                student_email: email,
+                student_phone: phone,
+                preferred_country: preferredCountry,
+                preferred_course: preferredCourse,
+                services_needed: servicesNeeded,
+                submission_date: new Date().toLocaleDateString()
+            });
+        } catch(emailError) {
+            console.log('Email error but form saved:', emailError);
+        }
 
         // Success!!
         btn.innerHTML = '<i class="fas fa-check"></i> Application Submitted Successfully!';
