@@ -32,13 +32,16 @@ window.submitForm = async function() {
         return;
     }
 
-    const btn = document.querySelector('.btn-submit');
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-    btn.disabled = true;
+  const btn = document.querySelector('.btn-submit');
+btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+btn.disabled = true;
+console.log("Starting submission...");
+console.log("First Name:", firstName);
+console.log("Email:", email);
 
     try {
-        // Save to Firebase FIRST
-        await addDoc(collection(db, 'students'), {
+    console.log("Trying Firebase...");
+    await addDoc(collection(db, 'students'), {
             firstName,
             lastName,
             email,
